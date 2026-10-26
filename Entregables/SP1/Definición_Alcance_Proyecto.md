@@ -6,7 +6,7 @@ Establecimiento del Product Backlog y los primeros requisitos funcionales.
 
 1. **Definir los módulos principales del sistema:**
 
-> **a.** Realiza preguntas guías a compañeros estudiantes y profesor para definir los módulos principales del sistema, como gestión de productos, ventas, usuarios, etc.
+> a. Realiza preguntas guías a compañeros estudiantes y profesor para definir los módulos principales del sistema, como gestión de productos, ventas, usuarios, etc.
 
 ## a. Preguntas generales sobre el negocio
 

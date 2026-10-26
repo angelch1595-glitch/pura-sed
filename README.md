@@ -90,11 +90,33 @@ Diseñar e implementar una solución web desacoplada y de alta disponibilidad qu
 
 ## <img src="./assets/icons/arquitectura.svg" width="22" height="22" align="absmiddle" /> Arquitectura del Sistema
 
-La plataforma adopta una **arquitectura en capas desacoplada** con telemetría en tiempo real, estructurada en dispositivos de usuario, cliente SPA en Blazor WebAssembly, servicios REST en ASP.NET Core y persistencia en SQL Server, coordinados mediante hubs de SignalR:
+PuraSed adopta una **arquitectura monolítica modular en capas**. Todo el sistema se despliega como una unidad, pero sus responsabilidades se mantienen separadas para facilitar las pruebas, el mantenimiento y una futura extracción de módulos. La base de datos y la pasarela de pago son servicios externos al monolito.
 
 <p align="center">
-  <img src="./assets/architecture.svg" width="100%" alt="Diagrama de Arquitectura de PuraSed" />
+  <img src="./assets/Arquitectura_Pura_Sed.png" width="100%" alt="Diagrama de Arquitectura de PuraSed" />
 </p>
+
+### Capas y responsabilidades
+
+| Capa | Responsabilidad |
+| :--- | :--- |
+| **Presentación** | Blazor WebAssembly, páginas y componentes responsivos por rol. Consume la API mediante `HttpClient` y mantiene el estado de autenticación. |
+| **Web API** | Controladores REST, DTOs, validación de entradas, autenticación JWT, autorización por rol y hub de SignalR. No contiene reglas de negocio. |
+| **Service Layer** | Orquesta los casos de uso de pedidos, menú, inventario, reservas, pagos, facturación, encuestas, reportes, usuarios y bitácora. |
+| **Domain Layer** | Define entidades, enumeraciones, reglas de negocio e interfaces de repositorio sin depender de infraestructura. |
+| **Acceso a datos** | Entity Framework Core, `DbContext`, repositorios y migraciones para persistir la información en SQL Server. |
+| **Infrastructure Layer** | Servicios transversales: hashing de contraseñas, logging, bitácora, generación de facturas PDF, exportación a Excel, almacenamiento de comprobantes e integración con pagos. |
+
+### Comunicación, seguridad y tiempo real
+
+- El cliente no accede directamente a SQL Server; todos los datos pasan por la Web API.
+- Las comunicaciones utilizan HTTPS y JSON mediante DTOs.
+- El personal se autentica con JWT; los roles administrativos incorporan verificación en dos pasos y autorización en el servidor.
+- SignalR notifica a cliente, cocina y bar los cambios de estado de una comanda sin recargar la página.
+- La pasarela de pago solo se integra para procesar el cobro y conservar la referencia de la transacción; no se almacenan datos sensibles de tarjetas.
+- SQL Server concentra la base de datos del sistema y debe operar con respaldos automáticos.
+
+La especificación completa se encuentra en [`Entregables/SP2/Arquitectura del sistema/Diseño arquitectura sistema.md`](./Entregables/SP2/Arquitectura%20del%20sistema/Dise%C3%B1o%20arquitectura%20sistema.md).
 
 ---
 
@@ -136,16 +158,23 @@ pura-sed/
 ├── README.md               # Documentación técnica interactiva del sistema
 ├── .gitignore              # Exclusiones de compilación binaria (bin, obj)
 ├── Entregables/                                  # Documentación y diagramas del proyecto
-│   ├── Diagrama Entidad-Relacion/                # Entregables del modelo de base de datos
-│   │   ├── Listado de entidades y atributos      # Documento 
-│   │   └── PuraSed_Diagrama_ER.png               # Diagrama entidad-relación 
-│   │
-│   └── Diagramas Casos de uso/                   # Diagramas del primer entregable
-│       ├── Arquitectura del sistema.png
-│       ├── Pagos y Facturación.png
-│       ├── Pedido.png
-│       ├── Reportes y estadisticas.png
-│       └── Reserva Mesas.png
+│   ├── SP1/                                      # Alcance y requisitos iniciales
+│   └── SP2/                                      # Arquitectura, UML y diseño del prototipo
+│       ├── Arquitectura del sistema/
+│       │   ├── Arquitectura_Pura_Sed.png
+│       │   └── Diseño arquitectura sistema.md
+│       ├── Diagramas UML/
+│       │   ├── Diagramas Casos de Uso/
+│       │   │   ├── Pedido.png
+│       │   │   ├── Reserva Mesas.png
+│       │   │   ├── Pagos y Facturación.png
+│       │   │   └── Reportes y estadisticas.png
+│       │   ├── Diagrama de clases/
+│       │   │   ├── PuraSed_Diagrama_ER.png
+│       │   │   ├── PuraSed_DIS02_Diccionario_Ampliado.docx
+│       │   │   └── PuraSed_DIS03_Convenciones_BD.docx
+│       │   └── Listado de entidades y atributos principales.pdf
+│       └── Link Figma_prototipo.md
 │
 ├── assets/                 # Recursos vectoriales SVG, animaciones e identidad visual
 │   ├── banner.svg          # Hero animado con burbujas y espuma de cerveza
